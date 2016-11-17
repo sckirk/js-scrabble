@@ -1,4 +1,5 @@
 var Scrabble = function() {
+    // due to how the specs are written, this score table does not account for the 50 point bonus for 7-letter words...
     this.scoreTable = [
         [1, "A", "E", "I", "O", "U", "L", "N", "R", "S", "T"],
         [2, "D", "G"],
@@ -9,6 +10,9 @@ var Scrabble = function() {
         [10, "Q", "Z"]
     ];
 };
+
+// this is used for testing throughout and below...
+var testingS = new Scrabble();
 
 // score(word): returns the total score value for the given word. The word is input as a string (case insensitive).
 Scrabble.prototype.score = function(word) {
@@ -44,14 +48,14 @@ Scrabble.prototype.highestScoreFrom = function(arrayOfWords) {
         }
     }
 
-    // to handle "tie" situations, create a new array with the words whose score is the greatestVal
+    // to handle "tie" situations, creating a new array with the words whose score is the greatestVal
     var highestScoreWords = [];
     for (var k = 0; k < arrayOfWords.length; k++) {
         if (this.score(arrayOfWords[k]) === greatestVal) {
             highestScoreWords.push(arrayOfWords[k]);
         }
     }
-    console.log(highestScoreWords); // this line is solely for internal testing purposes to confirm everything below is working as expected. Keeping live because it makes my tests below easy to confirm.
+    // console.log(highestScoreWords); // this line above was solely for internal manual testing purposes to confirm everything below is working as expected. Could turn this back 'on' if doing future testing.
 
     if (highestScoreWords.length === 1) {
         return highestScoreWords[0];
@@ -75,23 +79,81 @@ Scrabble.prototype.highestScoreFrom = function(arrayOfWords) {
 
 
 
+var Player = function(name) {
+    this.name = name.toUpperCase();
+    this.plays = [];
+};
 
-var testing = new Scrabble();
+// this is used for testing throughout and below...
+var testingP = new Player("suzannah");
+
+Player.prototype.totalScore = function() {
+    var playerScore = 0;
+    for (var n = 0; n < this.plays.length; n++) {
+        playerScore += testingS.score(this.plays[n]);
+    }
+    return playerScore;
+};
+
+Player.prototype.hasWon = function() {
+    if (this.totalScore() > 100) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+Player.prototype.play = function(word) {
+    if (this.totalScore() > 100) {
+        return false;
+    } else {
+    this.plays.push(word.toUpperCase());
+    }
+};
+
+Player.prototype.highestScoringWord = function() {
+    return testingS.highestScoreFrom(this.plays);
+};
+
+Player.prototype.highestWordScore = function() {
+    return testingS.score(this.highestScoringWord());
+};
 
 
-// YOUR CODE HERE - these next 4 lines part of the originial file
+
+// YOUR CODE HERE - this and the next 4 lines part of the original file
 Scrabble.prototype.helloWorld = function() {
   return 'hello world!';
 };
 
-// TESTING... (see comments for expected outputs)
-// var testing = new Scrabble();
-console.log(testing.helloWorld()); // hello world! - this was in the original file, keeping in here for fun.
-console.log(testing.score("quiz")); // 22
-console.log(testing.score("quizlets")); // 0, because the word's length is more than 7.
-console.log(testing.highestScoreFrom(["tea", "coffee", "qqqq"])); // qqqq - when there's only one highest scoring word, this is the clear winner.
-console.log(testing.highestScoreFrom(["tea", "coffee", "qqqq", "qqqkdda"])); // qqqkdda - when multiple words have the same highest score, the (first) word in the input array that is 7-letters wins.
-console.log(testing.highestScoreFrom(["tea", "coffee", "qqqkk", "zzzz", "qqqq"])); // zzzz - when multiple words have the same highest score and none of them are 7-letters, the (first) highest scoring word with the fewest letters wins.
+
+
+// TESTING SCRABBLE... (see comments for expected outputs)
+console.log(testingS.helloWorld()); // hello world! - this was in the original file, keeping in here for fun.
+console.log(testingS.score("quiz")); // 22
+console.log(testingS.score("quizlets")); // 0, because the word's length is more than 7.
+console.log(testingS.highestScoreFrom(["tea", "coffee", "qqqq"])); // qqqq - when there's only one highest scoring word, this is the clear winner.
+console.log(testingS.highestScoreFrom(["tea", "coffee", "qqqq", "qqqkdda"])); // qqqkdda - when multiple words have the same highest score, the (first) word in the input array that is 7-letters wins.
+console.log(testingS.highestScoreFrom(["tea", "coffee", "qqqkk", "zzzz", "qqqq"])); // zzzz - when multiple words have the same highest score and none of them are 7-letters, the (first) highest scoring word with the fewest letters wins.
+
+
+
+// TESTING PLAYER... (see comments for expected outputs)
+console.log(testingP.name); // SUZANNAH
+testingP.play("zebras");
+testingP.play("giraffe");
+console.log(testingP.plays); // [ 'ZEBRA', 'GIRAFFE' ]
+console.log(testingP.totalScore()); // 31
+console.log(testingP.hasWon()); // false
+testingP.play("qqqqqqq");
+console.log(testingP.plays); // [ 'ZEBRAS', 'GIRAFFE', 'QQQQQQQ' ]
+console.log(testingP.totalScore()); // 101
+console.log(testingP.hasWon()); // true
+console.log(testingP.play("is")); // false - because this player has already won.
+console.log(testingP.plays); // [ 'ZEBRAS', 'GIRAFFE', 'QQQQQQQ' ] - simply confirming that nothing was added into the plays array from the line above.
+console.log(testingP.highestScoringWord()); // QQQQQQQ
+console.log(testingP.highestWordScore()); // 70
+
 
 
 module.exports = Scrabble;
