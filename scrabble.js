@@ -11,9 +11,6 @@ var Scrabble = function() {
     ];
 };
 
-// this is used for testing throughout and below...
-var testingS = new Scrabble();
-
 // score(word): returns the total score value for the given word. The word is input as a string (case insensitive).
 Scrabble.prototype.score = function(word) {
     if (word.length > 7) {
@@ -55,7 +52,8 @@ Scrabble.prototype.highestScoreFrom = function(arrayOfWords) {
             highestScoreWords.push(arrayOfWords[k]);
         }
     }
-    // console.log(highestScoreWords); // this line above was solely for internal manual testing purposes to confirm everything below is working as expected. Could turn this back 'on' if doing future testing.
+
+    // console.log(highestScoreWords); // this line above was solely for internal manual testing purposes to confirm everything below is working as expected. Could turn this back 'on' for testing in the future if doing tweaks on this object.
 
     if (highestScoreWords.length === 1) {
         return highestScoreWords[0];
@@ -82,15 +80,13 @@ Scrabble.prototype.highestScoreFrom = function(arrayOfWords) {
 var Player = function(name) {
     this.name = name.toUpperCase();
     this.plays = [];
+    this.game = new Scrabble();
 };
-
-// this is used for testing throughout and below...
-var testingP = new Player("suzannah");
 
 Player.prototype.totalScore = function() {
     var playerScore = 0;
     for (var n = 0; n < this.plays.length; n++) {
-        playerScore += testingS.score(this.plays[n]);
+        playerScore += this.game.score(this.plays[n]);
     }
     return playerScore;
 };
@@ -112,11 +108,11 @@ Player.prototype.play = function(word) {
 };
 
 Player.prototype.highestScoringWord = function() {
-    return testingS.highestScoreFrom(this.plays);
+    return this.game.highestScoreFrom(this.plays);
 };
 
 Player.prototype.highestWordScore = function() {
-    return testingS.score(this.highestScoringWord());
+    return this.game.score(this.highestScoringWord());
 };
 
 
@@ -129,6 +125,7 @@ Scrabble.prototype.helloWorld = function() {
 
 
 // TESTING SCRABBLE... (see comments for expected outputs)
+var testingS = new Scrabble();
 console.log(testingS.helloWorld()); // hello world! - this was in the original file, keeping in here for fun.
 console.log(testingS.score("quiz")); // 22
 console.log(testingS.score("quizlets")); // 0, because the word's length is more than 7.
@@ -139,6 +136,7 @@ console.log(testingS.highestScoreFrom(["tea", "coffee", "qqqkk", "zzzz", "qqqq"]
 
 
 // TESTING PLAYER... (see comments for expected outputs)
+var testingP = new Player('suzannah');
 console.log(testingP.name); // SUZANNAH
 testingP.play("zebras");
 testingP.play("giraffe");
@@ -160,5 +158,5 @@ module.exports = Scrabble;
 
 
 
-// Items I have not done in this project's short life:
-    // Assuming all inputs are alpha characters
+// Notes about this project's short life:
+    // I'm assuming all inputs are alpha characters
