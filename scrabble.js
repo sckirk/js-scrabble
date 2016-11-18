@@ -13,20 +13,33 @@ var Scrabble = function() {
 
 // score(word): returns the total score value for the given word. The word is input as a string (case insensitive).
 Scrabble.prototype.score = function(word) {
+    var wordScore = 0;
+    var nonAlphaChar = 0;
+    var alphaChars = ["A", "E", "I", "O", "U", "L", "N", "R", "S", "T", "D", "G", "B", "C", "M", "P", "F", "H", "V", "W", "Y", "K", "J", "X", "Q", "Z"];
+
+    var scoreTable = this.scoreTable; //this local variable is necessary to bypass the error that otherwise would be thrown in line 18 because the scope of 'this' changes inside anonymous functions.
+
     if (word.length > 7) {
         return 0;
     }
-    var wordScore = 0;
-    var scoreTable = this.scoreTable; //this local variable is necessary to bypass the error that otherwise would be thrown in line 18 because the scope of 'this' changes inside anonymous functions.
+
     var wordAsArray = word.toUpperCase().split("");
     wordAsArray.forEach(function(letter) {
-        scoreTable.forEach(function(scoreRow) {
-            if (scoreRow.includes(letter)) {
-                wordScore += scoreRow[0];
-            }
-        });
+        if (alphaChars.includes(letter)) {
+            scoreTable.forEach(function(scoreRow) {
+                if (scoreRow.includes(letter)) {
+                    wordScore += scoreRow[0];
+                }
+            });
+        } else if (alphaChars.includes(letter) === false) {
+            nonAlphaChar += 1; // this is my second or fourth idea how to handle words with non-alpha characters, since the forEach function behaves differently than I originally expected.
+        }
     });
-    return wordScore;
+    if (nonAlphaChar !== 0) {
+        return 0;
+    } else {
+        return wordScore;
+    }
 };
 
 // highestScoreFrom(arrayOfWords): returns the word in the array with the highest score (based on specs).
@@ -53,7 +66,7 @@ Scrabble.prototype.highestScoreFrom = function(arrayOfWords) {
         }
     }
 
-    // console.log(highestScoreWords); // this line above was solely for internal manual testing purposes to confirm everything below is working as expected. Could turn this back 'on' for testing in the future if doing tweaks on this object.
+    // console.log(highestScoreWords);  // this line above was solely for internal manual testing purposes to confirm everything below is working as expected. Could turn this back 'on' for testing in the future if doing tweaks on this object.
 
     if (highestScoreWords.length === 1) {
         return highestScoreWords[0];
@@ -129,6 +142,9 @@ var testingS = new Scrabble();
 console.log(testingS.helloWorld()); // hello world! - this was in the original file, keeping in here for fun.
 console.log(testingS.score("quiz")); // 22
 console.log(testingS.score("quizlets")); // 0, because the word's length is more than 7.
+console.log(testingS.score("quiz1")); // 0, because one character is not A-Z.
+console.log(testingS.score("quiz ")); // 0, because one character is not A-Z.
+console.log(testingS.score("quiz*")); // 0, because one character is not A-Z.
 console.log(testingS.highestScoreFrom(["tea", "coffee", "qqqq"])); // qqqq - when there's only one highest scoring word, this is the clear winner.
 console.log(testingS.highestScoreFrom(["tea", "coffee", "qqqq", "qqqkdda"])); // qqqkdda - when multiple words have the same highest score, the (first) word in the input array that is 7-letters wins.
 console.log(testingS.highestScoreFrom(["tea", "coffee", "qqqkk", "zzzz", "qqqq"])); // zzzz - when multiple words have the same highest score and none of them are 7-letters, the (first) highest scoring word with the fewest letters wins.
@@ -160,3 +176,11 @@ module.exports = Scrabble;
 
 // Notes about this project's short life:
     // I'm assuming all inputs are alpha characters
+
+
+// DRAFTING PULL REQUEST...
+    // This was a great, short project to get more familiar with JS syntax. Last night I was so grateful for console.log helping me "see" that I'd forgotten () and that's why my code wasn't executing how I expected it to.
+    //
+    // This code is not DRY.
+    //
+    // Also, I am assuming all inputs are alpha characters. I know how I would check for this in a non-DRY way.
