@@ -171,16 +171,3 @@ console.log(testingP.highestWordScore()); // 70
 
 
 module.exports = Scrabble;
-
-
-
-// Notes about this project's short life:
-    // I'm assuming all inputs are alpha characters
-
-
-// DRAFTING PULL REQUEST...
-    // This was a great, short project to get more familiar with JS syntax. Last night I was so grateful for console.log helping me "see" that I'd forgotten () and that's why my code wasn't executing how I expected it to.
-    //
-    // This code is not DRY.
-    //
-    // Also, I am assuming all inputs are alpha characters. I know how I would check for this in a non-DRY way.
